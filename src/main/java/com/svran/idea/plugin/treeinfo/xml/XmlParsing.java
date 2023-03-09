@@ -1,4 +1,4 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo.xml;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
@@ -8,9 +8,8 @@ import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.plugins.infotip.ui.Icons;
+import com.svran.idea.plugin.treeinfo.ui.Icons;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -77,7 +76,7 @@ public class XmlParsing {
                 }
             }
         });
-        System.out.println(123);
+        System.out.println("1解析XML完成");
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo.xml;
 
 import com.intellij.psi.xml.XmlTag;
 
@@ -34,6 +34,17 @@ public class XmlEntity {
      * 图标
      */
     private String icon;
+
+    @Override
+    public String toString() {
+        return "备注图标类{" +
+                "path='" + path + '\'' +
+                ", extension='" + extension + '\'' +
+                ", title='" + title + '\'' +
+//                ", tag=" + tag +
+//                ", icon='" + icon + '\'' +
+                '}';
+    }
 
     //region  getset
 

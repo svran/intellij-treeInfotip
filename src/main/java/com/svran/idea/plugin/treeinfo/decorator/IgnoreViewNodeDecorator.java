@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo.decorator;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
@@ -30,9 +30,8 @@ import com.intellij.ide.projectView.ProjectViewNodeDecorator;
 import com.intellij.openapi.project.Project;
 import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.svran.idea.plugin.treeinfo.FileDirectory;
 import org.jetbrains.annotations.NotNull;
-
-import static com.plugins.infotip.FileDirectory.setLocationString;
 
 /**
  * 项目目录视图
@@ -47,8 +46,8 @@ public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
     }
 
     @Override
-    public void decorate(ProjectViewNode node, PresentationData data) {
-        setLocationString(node,data);
+    public void decorate(ProjectViewNode<?> node, PresentationData data) {
+        FileDirectory.setLocationString(node, data);
     }
 
     @Override

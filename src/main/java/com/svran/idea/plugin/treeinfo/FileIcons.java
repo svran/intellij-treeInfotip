@@ -1,6 +1,6 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo;
 
-import com.plugins.infotip.ui.Icons;
+import com.svran.idea.plugin.treeinfo.ui.Icons;
 
 import javax.swing.*;
 import java.lang.reflect.Field;

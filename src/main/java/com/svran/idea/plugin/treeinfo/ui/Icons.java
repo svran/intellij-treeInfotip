@@ -1,4 +1,4 @@
-package com.plugins.infotip.ui;
+package com.svran.idea.plugin.treeinfo.ui;
 
 import javax.swing.*;
 

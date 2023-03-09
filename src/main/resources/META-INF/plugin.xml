@@ -1,108 +1,44 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.linkkou.plugin.intellij.assistant</id>
-    <name>TreeInfotip</name>
-    <vendor email="chinacclk@gmail.com" url="https://github.com/Link-Kou/intellij-treeInfotip">linkkou</vendor>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.svran.idea.plugin.treeinfo</id>
 
-    <!-- 插件版本 -->
-    <version>2.2.3</version>
-    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="191"/>
-    <!-- 插件的描述 -->
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Treeinfo</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="ranliulian@gmail.com" url="https://github.com/svran">GitHub</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-      <p><b>TreeInfotip plugin for IntelliJ IDEs.</b></p>
-      <br/>
-      <p>
-          <b>
-            <a href="https://github.com/Link-Kou/intellij-treeInfotip">GitHub</a> |
-            <a href="https://github.com/Link-Kou/intellij-treeInfotip/issues">Issues</a> |
-          </b>
-      </p>
-      <p>
-          <ul>
-            <h3>English:</h3>
-            <li>Add comment information to the project directory tree</li>
-            <h3>中文：</h3>
-            <li>项目目录树添加备注信息</li>
-          </ul>
-      </p>
-      <br/>
-      <p>
-        <a title="To Github" href="https://github.com/Link-Kou/intellij-treeInfotip"><img src="https://raw.githubusercontent.com/Link-Kou/intellij-treeInfotip/master/image/2021-06-19_14-39-35.png" width="532" alt="image"></a>
-      </p>
-      <br/>
-      <p><a href="https://github.com/Link-Kou/intellij-treeInfotip/issues">Send issues</a></p>
-    ]]></description>
-
-    <!-- 插件的功能 -->
-    <change-notes><![CDATA[
-    <ul>
-        <p>2.2.3</p>
-        <li>修正项目内配置被覆盖重用问题</li>
-        <li>Fixed reuse of overridden configurations in projects</li>
-      </ul>
-    <ul>
-        <p>2.2.2</p>
-        <li>修正其他的产品的支持度</li>
-        <li>Amend the support of other products</li>
-      </ul>
-    <ul>
-        <p>2.2.1</p>
-        <li>添加图标还原支持</li>
-        <li>Add icon restore support</li>
-      </ul>
-    <ul>
-        <p>2.2.0</p>
-        <li>添加图标自定义功能</li>
-        <li>Add icon customization function</li>
-      </ul>
-    <ul>
-        <p>2.1.1</p>
-        <li>修改显示问题</li>
-        <li>Modify the display problem</li>
-      </ul>
-     <ul>
-        <p>2.1.0</p>
-        <li>修改初始化报错问题</li>
-        <li>Modify the initialization error problem</li>
-      </ul>
-      <ul>
-        <p>2.0.2</p>
-        <li>添加备注后强制刷新</li>
-        <li>Force refresh after adding notes</li>
-      </ul>
-     <ul>
-        <p>2.0.1</p>
-        <li>修复路径替换失效的情况</li>
-        <li>Fix the failure of path replacement</li>
-      </ul>
-      <ul>
-        <p>2.0.0</p>
-        <li>全面重构,添加右键菜单支持,老的格式将不在支持</li>
-        <li>Fully refactored, adding right-click menu support,The old format will no longer be supported</li>
-      </ul>
-    ]]></change-notes>
-
+    给目录添加备注
+    参考源项目: https://github.com/Link-Kou/intellij-treeInfotip
+  ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <!-- uncomment to enable plugin in all products-->
     <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <postStartupActivity implementation="com.plugins.infotip.PluginStartupActivity"/>
-        <treeStructureProvider implementation="com.plugins.infotip.TreeOnlyTextProvider"/>
-        <projectViewNodeDecorator implementation="com.plugins.infotip.IgnoreViewNodeDecorator"/>
+        <postStartupActivity implementation="com.svran.idea.plugin.treeinfo.PluginStartupActivity"/>
+        <treeStructureProvider implementation="com.svran.idea.plugin.treeinfo.provider.TreeOnlyTextProvider"/>
+        <projectViewNodeDecorator implementation="com.svran.idea.plugin.treeinfo.decorator.IgnoreViewNodeDecorator"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
         <group id="StudyAction.MyGroup" text="Add Description" popup="true" icon="AllIcons.Actions.Menu_paste">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="ReplaceInPath"/>
-            <action id="FirstAction" class="com.plugins.infotip.ActionDescriptionText" text="Add Text"
+            <action id="FirstAction" class="com.svran.idea.plugin.treeinfo.action.ActionDescriptionText" text="Add Text"
                     description="添加备注信息">
             </action>
-            <action id="FirstAction2" class="com.plugins.infotip.ActionDescriptionIcon" text="Add Icons"
+            <action id="FirstAction2" class="com.svran.idea.plugin.treeinfo.action.ActionDescriptionIcon" text="Add Icons"
                     description="添加图标信息">
             </action>
         </group>

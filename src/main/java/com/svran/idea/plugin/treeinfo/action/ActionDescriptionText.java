@@ -1,4 +1,4 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo.action;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -6,13 +6,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.xml.XmlFile;
-import com.plugins.infotip.ui.Icons;
-import com.plugins.infotip.ui.IconsList;
+import com.svran.idea.plugin.treeinfo.FileDirectory;
+import com.svran.idea.plugin.treeinfo.xml.XmlEntity;
+import com.svran.idea.plugin.treeinfo.xml.XmlParsing;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
-
-import static com.plugins.infotip.FileDirectory.getBasePath;
 
 /**
  * A <code>ActionDescription</code> Class
@@ -22,35 +19,28 @@ import static com.plugins.infotip.FileDirectory.getBasePath;
  * @version 1.0
  * @date 2021/6/7 14:13
  */
-public class ActionDescriptionIcon extends AnAction {
+public class ActionDescriptionText extends AnAction {
 
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        final IconsList dialog = new IconsList();
-        dialog.pack();
-        dialog.setTitle("Select Icons");
-        dialog.setSize(288, 120);
-        dialog.setLocationRelativeTo(null);
-        dialog.setResizable(false);
-        Dimension dimension = new Dimension();
-        dimension.setSize(288, 120);
-        dialog.setMaximumSize(dimension);
-        dialog.setModal(true);
-        getBasePath(anActionEvent, new FileDirectory.Callback() {
+        FileDirectory.getBasePath(anActionEvent, new FileDirectory.Callback() {
             @Override
             public void onModifyPath(String asbbasePath, XmlEntity x, XmlFile fileDirectoryXml, Project project, String extension) {
-                dialog.setIcons(x.getIcon());
-                dialog.setVisible(true);
-                Icons icons = dialog.getIcons();
-                XmlParsing.modifyPath(x.getTag(), icons, fileDirectoryXml, project);
+                String txt = Messages.showInputDialog(project, "Input Your " + asbbasePath + "  Description",
+                        "What Needs To Be Description?", AllIcons.Actions.Menu_paste, x.getTitle(), null);
+                if (null != txt) {
+                    XmlParsing.modifyPath(x.getTag(), txt, null, fileDirectoryXml, project);
+                }
             }
 
             @Override
             public void onCreatePath(String asbbasePath, XmlFile fileDirectoryXml, Project project, String extension) {
-                dialog.setVisible(true);
-                Icons icons = dialog.getIcons();
-                XmlParsing.createPath(fileDirectoryXml, project, asbbasePath, null, icons, extension);
+                String txt = Messages.showInputDialog(project, "Input Your " + asbbasePath + "  Description",
+                        "What Needs To Be Description?", AllIcons.Actions.Menu_paste, "", null);
+                if (null != txt) {
+                    XmlParsing.createPath(fileDirectoryXml, project, asbbasePath, txt, null, extension);
+                }
             }
         });
     }

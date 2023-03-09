@@ -1,17 +1,16 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo.provider;
 
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
+import com.svran.idea.plugin.treeinfo.FileDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-import static com.plugins.infotip.FileDirectory.setLocationString;
-
 /**
- * 目录树显示备注
+ * 目录树显示备注 .
  *
  * @author LK
  * @date 2018-04-07 1:18
@@ -40,7 +39,7 @@ public class TreeOnlyTextProvider implements TreeStructureProvider {
      * @param abstractTreeNode 对象
      */
     private void psiDirectoryNode(AbstractTreeNode<?> abstractTreeNode) {
-        setLocationString(abstractTreeNode);
+        FileDirectory.setLocationString(abstractTreeNode);
     }
 
 }

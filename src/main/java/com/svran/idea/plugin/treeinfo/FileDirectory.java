@@ -1,4 +1,4 @@
-package com.plugins.infotip;
+package com.svran.idea.plugin.treeinfo;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.PresentationData;
@@ -16,17 +16,23 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
-import com.plugins.infotip.ui.Icons;
+import com.svran.idea.plugin.treeinfo.ui.Icons;
+import com.svran.idea.plugin.treeinfo.xml.XmlEntity;
+import com.svran.idea.plugin.treeinfo.xml.XmlParsing;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.idea.projectView.KtClassOrObjectTreeNode;
+import org.jetbrains.kotlin.psi.KtClassOrObject;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE;
-import static com.plugins.infotip.FileIcons.getAllIcons;
 
 /**
  * A <code>FileDirectory</code> Class
@@ -73,7 +79,7 @@ public class FileDirectory {
         if (null == project) {
             return;
         }
-        //获取文件、文件夹等对象
+        //获取文件 文件夹等对象
         VirtualFile file = VIRTUAL_FILE.getData(anActionEvent.getDataContext());
         if (null != file) {
             XmlFile fileDirectoryXml = FileDirectory.getFileDirectoryXml(project, true);
@@ -81,7 +87,7 @@ public class FileDirectory {
             //使用相对路径
             String basePath = project.getPresentableUrl();
             if (null != basePath && basePath.length() > 0) {
-                //改为安长度去除
+                //改为按长度去除.
                 //此处改进
                 String presentableUrl = file.getCanonicalPath();
                 if (presentableUrl.length() < basePath.length()) {
@@ -123,7 +129,7 @@ public class FileDirectory {
             //git支持不友好的解决
             PsiFile[] pfs = FilenameIndex.getFilesByName(project, getFileName(), GlobalSearchScope.allScope(project));
             if (pfs.length == 1) {
-                //获取一个文件，如果存在多个相同的文件，取查询到第一个
+                //获取一个文件，如果存在多个相同的文件，取查询到第一个.
                 PsiFile pf = pfs[0];
                 if (pf instanceof XmlFile) {
                     xmlFile = (XmlFile) pf;
@@ -147,7 +153,29 @@ public class FileDirectory {
      * @return String
      */
     private static String getFileName() {
+//        Map<String, String> map = System.getenv();
+//        String userName = map.get("USERNAME");// 获取用户名
+//        String computerName = map.get("COMPUTERNAME");// 获取计算机名
+//        String userDomain = map.get("USERDOMAIN");// 获取计算机域名
+//        System.out.println("userName:" + userName);
+//        System.out.println("computerName:" + computerName);
+//        System.out.println("userDomain:" + userDomain);
+//        return "treeInfo/DirectoryV2" + getMD5Str(userName + computerName + userDomain) + ".xml";
         return "DirectoryV2.xml";
+    }
+
+    private static String getMD5Str(String str) {
+        byte[] digest = null;
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("md5");
+            digest = md5.digest(str.getBytes(StandardCharsets.UTF_8));
+            //16是表示转换为16进制数
+            String md5Str = new BigInteger(1, digest).toString(16);
+            return md5Str;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
@@ -174,6 +202,7 @@ public class FileDirectory {
         File f = new File(project.getBasePath() + File.separator + getFileName());
         if (!f.exists()) {
             try {
+                f.getParentFile().mkdirs();
                 boolean newFile = f.createNewFile();
                 if (newFile) {
                     BufferedWriter writer = null;
@@ -326,6 +355,7 @@ public class FileDirectory {
                     return;
                 }
             }
+
             VirtualFile virtualFile1 = getVirtualFile(methods1, abstractTreeNode);
             if (null != virtualFile1) {
                 setXmlToLocationString(virtualFile1, abstractTreeNode);
@@ -367,6 +397,11 @@ public class FileDirectory {
      * @return VirtualFile
      */
     private static VirtualFile getVirtualFile(Method[] methods, Object o) {
+        if (o instanceof KtClassOrObjectTreeNode) {
+            KtClassOrObject kv = ((KtClassOrObjectTreeNode) o).getValue();
+            VirtualFile vfKt = kv.getContainingFile().getVirtualFile();
+            return vfKt;
+        }
         for (Method method : methods) {
             if ("getVirtualFile".equals(method.getName())) {
                 method.setAccessible(true);
@@ -408,7 +443,7 @@ public class FileDirectory {
         if (null != matchPath) {
             //设置备注
             data.setLocationString(matchPath.getTitle());
-            for (Icons allIcon : getAllIcons()) {
+            for (Icons allIcon : FileIcons.getAllIcons()) {
                 if (allIcon.getName().equals(matchPath.getIcon())) {
                     data.setIcon(allIcon.getIcon());
                     return;

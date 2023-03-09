@@ -1,4 +1,6 @@
-package com.plugins.infotip.ui;
+package com.svran.idea.plugin.treeinfo.ui;
+
+import com.svran.idea.plugin.treeinfo.FileIcons;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.plugins.infotip.FileIcons.getAllIcons;
 
 /**
  * A <code>iconsList</code> Class
@@ -42,14 +43,14 @@ public class IconsList extends JDialog {
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(35, 25));
         comboBox1.setRenderer(renderer);
-        ArrayList<Icons> allIcons = getAllIcons();
+        ArrayList<Icons> allIcons = FileIcons.getAllIcons();
         for (Icons allIcon : allIcons) {
             comboBox1.addItem(allIcon);
         }
     }
 
     public void setIcons(String name) {
-        ArrayList<Icons> allIcons = getAllIcons();
+        ArrayList<Icons> allIcons = FileIcons.getAllIcons();
         for (Icons allIcon : allIcons) {
             String name1 = allIcon.getName();
             if (null != name1) {
