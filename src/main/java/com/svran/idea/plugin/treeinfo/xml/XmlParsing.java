@@ -38,10 +38,10 @@ public class XmlParsing {
     private final static ConcurrentHashMap<Project, List<XmlEntity>> XMLLIST = new ConcurrentHashMap<>();
 
     /**
-     * è§£æXML
+     * ½âÎöXML
      *
-     * @param project é¡¹ç›®
-     * @param xmlFile xmlæ–‡ä»¶
+     * @param project ÏîÄ¿
+     * @param xmlFile xmlÎÄ¼ş
      */
     public static void parsing(Project project, XmlFile xmlFile) {
         if (null == xmlFile) {
@@ -65,7 +65,7 @@ public class XmlParsing {
             public void visitElement(final PsiElement element) {
                 super.visitElement(element);
                 if (element instanceof XmlTag) {
-                    //é’ˆå¯¹èŠ‚ç‚¹æ‰§è¡Œä¸åŒçš„è§£ææ–¹æ¡ˆ
+                    //Õë¶Ô½ÚµãÖ´ĞĞ²»Í¬µÄ½âÎö·½°¸
                     XmlTag tag = (XmlTag) element;
                     if (TAGTREE.equals(tag.getName())) {
                         XmlEntity tree = tree(tag, presentableUrl);
@@ -76,14 +76,14 @@ public class XmlParsing {
                 }
             }
         });
-        System.out.println("1è§£æXMLå®Œæˆ");
+        System.out.println("1½âÎöXMLÍê³É");
     }
 
     /**
-     * è§£æXML
+     * ½âÎöXML
      *
-     * @param project é¡¹ç›®
-     * @param xmlFile xmlæ–‡ä»¶
+     * @param project ÏîÄ¿
+     * @param xmlFile xmlÎÄ¼ş
      */
     public static List<XmlEntity> getRefreshXml(Project project, XmlFile xmlFile) {
         parsing(project, xmlFile);
@@ -95,7 +95,7 @@ public class XmlParsing {
     }
 
     /**
-     * è§£æXML
+     * ½âÎöXML
      */
     public static List<XmlEntity> getXml(Project project) {
         final List<XmlEntity> xmlEntities = XMLLIST.get(project);
@@ -114,14 +114,14 @@ public class XmlParsing {
     }
 
     /**
-     * åˆ›å»ºæ–°æ ‡ç­¾
+     * ´´½¨ĞÂ±êÇ©
      *
      * @param xmlFile   xml
-     * @param project   é¡¹ç›®
-     * @param path      è·¯å¾„
-     * @param title     æ ‡é¢˜
-     * @param icon      å›¾æ ‡
-     * @param extension ç±»å‹
+     * @param project   ÏîÄ¿
+     * @param path      Â·¾¶
+     * @param title     ±êÌâ
+     * @param icon      Í¼±ê
+     * @param extension ÀàĞÍ
      */
     public static void createPath(XmlFile xmlFile, Project project, String path, String title, Icons icon, String extension) {
         XmlDocument document = xmlFile.getDocument();
@@ -154,12 +154,12 @@ public class XmlParsing {
 
 
     /**
-     * ä¿®æ”¹è·¯å¾„
+     * ĞŞ¸ÄÂ·¾¶
      *
-     * @param childTag æ ‡ç­¾
-     * @param title    æ ‡é¢˜
-     * @param icon     å›¾æ ‡
-     * @param project  é¡¹ç›®
+     * @param childTag ±êÇ©
+     * @param title    ±êÌâ
+     * @param icon     Í¼±ê
+     * @param project  ÏîÄ¿
      */
     public static void modifyPath(XmlTag childTag, String title, Icons icon, XmlFile xmlFile, Project project) {
         if (null != childTag) {
@@ -179,11 +179,11 @@ public class XmlParsing {
     }
 
     /**
-     * ä¿®æ”¹è·¯å¾„
+     * ĞŞ¸ÄÂ·¾¶
      *
-     * @param childTag æ ‡ç­¾
-     * @param icon     å›¾æ ‡
-     * @param project  é¡¹ç›®
+     * @param childTag ±êÇ©
+     * @param icon     Í¼±ê
+     * @param project  ÏîÄ¿
      */
     public static void modifyPath(XmlTag childTag, Icons icon, XmlFile xmlFile, Project project) {
         if (null != childTag) {

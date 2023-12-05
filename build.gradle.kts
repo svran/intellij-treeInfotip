@@ -1,12 +1,11 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.13.1"
-//    kotlin("jvm") version "1.2.30"
+    id("org.jetbrains.intellij") version "1.16.1"
 }
 
 group = "com.svran.idea.plugin"
-version = "1.1.0-SNAPSHOT"
-//
+version = "1.1.1"
+
 //buildscript {
 //    repositories { mavenCentral() }
 //    dependencies { classpath(kotlin("gradle-plugin", "1.2.30")) }
@@ -19,7 +18,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.1.4")
+    version.set("2023.1.5")
     type.set("IC") // Target IDE Platform
     sandboxDir.set("D:/Android/idea-sandbox")
     downloadSources.set(false)
@@ -29,13 +28,13 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     patchPluginXml {
-        sinceBuild.set("221")
-        untilBuild.set("231.*")
+        sinceBuild.set("231")
+        untilBuild.set("241.*")
     }
 
     signPlugin {

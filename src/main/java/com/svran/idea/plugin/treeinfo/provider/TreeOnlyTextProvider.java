@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 /**
- * ç›®å½•æ ‘æ˜¾ç¤ºå¤‡æ³¨ .
+ * Ä¿Â¼Ê÷ÏÔÊ¾±¸×¢ .
  *
  * @author LK
  * @date 2018-04-07 1:18
@@ -26,7 +26,7 @@ public class TreeOnlyTextProvider implements TreeStructureProvider {
 
     @Nullable
     @Override
-    public Object getData(@NotNull Collection<AbstractTreeNode<?>> selected, @NotNull String dataId) {
+    public Object getData(@NotNull Collection<? extends AbstractTreeNode<?>> selected, @NotNull String dataId) {
         for (AbstractTreeNode<?> abstractTreeNode : selected) {
             psiDirectoryNode(abstractTreeNode);
         }
@@ -34,9 +34,9 @@ public class TreeOnlyTextProvider implements TreeStructureProvider {
     }
 
     /**
-     * è·å–éå†ç›®å½•
+     * »ñÈ¡±éÀúÄ¿Â¼
      *
-     * @param abstractTreeNode å¯¹è±¡
+     * @param abstractTreeNode ¶ÔÏó
      */
     private void psiDirectoryNode(AbstractTreeNode<?> abstractTreeNode) {
         FileDirectory.setLocationString(abstractTreeNode);

@@ -1,5 +1,6 @@
 package com.svran.idea.plugin.treeinfo.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -24,6 +25,10 @@ import java.awt.*;
  */
 public class ActionDescriptionIcon extends AnAction {
 
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT; // super.getActionUpdateThread();
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {

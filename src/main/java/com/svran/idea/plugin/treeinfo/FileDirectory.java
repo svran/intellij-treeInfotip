@@ -13,8 +13,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlFile;
 import com.svran.idea.plugin.treeinfo.ui.Icons;
 import com.svran.idea.plugin.treeinfo.xml.XmlEntity;
@@ -47,54 +46,54 @@ public class FileDirectory {
 
     public interface Callback {
         /**
-         * ä¿®æ”¹è·¯å¾„
+         * ĞŞ¸ÄÂ·¾¶
          *
-         * @param asbbasePath      ç»å¯¹è·¯å¾„
-         * @param x                å¯¹è±¡
-         * @param fileDirectoryXml å¯¹è±¡
-         * @param project          å¯¹è±¡
-         * @param extension        å¯¹è±¡
+         * @param asbbasePath      ¾ø¶ÔÂ·¾¶
+         * @param x                ¶ÔÏó
+         * @param fileDirectoryXml ¶ÔÏó
+         * @param project          ¶ÔÏó
+         * @param extension        ¶ÔÏó
          */
         void onModifyPath(String asbbasePath, XmlEntity x, XmlFile fileDirectoryXml, Project project, String extension);
 
         /**
-         * åˆ›å»ºè·¯å¾„
+         * ´´½¨Â·¾¶
          *
-         * @param asbbasePath      ç»å¯¹è·¯å¾„
-         * @param fileDirectoryXml å¯¹è±¡
-         * @param project          å¯¹è±¡
-         * @param extension        å¯¹è±¡
+         * @param asbbasePath      ¾ø¶ÔÂ·¾¶
+         * @param fileDirectoryXml ¶ÔÏó
+         * @param project          ¶ÔÏó
+         * @param extension        ¶ÔÏó
          */
         void onCreatePath(String asbbasePath, XmlFile fileDirectoryXml, Project project, String extension);
     }
 
     /**
-     * è·å–åŸºç¡€è·¯å¾„
+     * »ñÈ¡»ù´¡Â·¾¶
      *
-     * @param anActionEvent å¯¹è±¡
-     * @param callback      å›è°ƒ
+     * @param anActionEvent ¶ÔÏó
+     * @param callback      »Øµ÷
      */
     public static void getBasePath(AnActionEvent anActionEvent, Callback callback) {
         final Project project = anActionEvent.getProject();
         if (null == project) {
             return;
         }
-        //è·å–æ–‡ä»¶ æ–‡ä»¶å¤¹ç­‰å¯¹è±¡
+        //»ñÈ¡ÎÄ¼ş ÎÄ¼ş¼ĞµÈ¶ÔÏó
         VirtualFile file = VIRTUAL_FILE.getData(anActionEvent.getDataContext());
         if (null != file) {
             XmlFile fileDirectoryXml = FileDirectory.getFileDirectoryXml(project, true);
             List<XmlEntity> refreshXml = XmlParsing.getRefreshXml(project, fileDirectoryXml);
-            //ä½¿ç”¨ç›¸å¯¹è·¯å¾„
+            //Ê¹ÓÃÏà¶ÔÂ·¾¶
             String basePath = project.getPresentableUrl();
-            if (null != basePath && basePath.length() > 0) {
-                //æ”¹ä¸ºæŒ‰é•¿åº¦å»é™¤.
-                //æ­¤å¤„æ”¹è¿›
+            if (null != basePath && !basePath.isEmpty()) {
+                //¸ÄÎª°´³¤¶ÈÈ¥³ı.
+                //´Ë´¦¸Ä½ø
                 String presentableUrl = file.getCanonicalPath();
-                if (presentableUrl.length() < basePath.length()) {
-                    Messages.showMessageDialog(project, "Unable to get the root path of the file", "Can't Get Path", AllIcons.Actions.Menu_paste);
+                if (presentableUrl != null && presentableUrl.length() < basePath.length()) {
+                    Messages.showMessageDialog(project, "Unable to get the root path of the file", "Can't Get Path", AllIcons.Actions.MenuPaste);
                     return;
                 }
-                String asbbasePath = presentableUrl.substring(basePath.length(), presentableUrl.length());
+                String asbbasePath = presentableUrl != null ? presentableUrl.substring(basePath.length()) : "";
                 String extension = file.getExtension();
                 boolean notfind = false;
                 for (XmlEntity x : refreshXml) {
@@ -110,31 +109,33 @@ public class FileDirectory {
                 }
             }
         } else {
-            Messages.showMessageDialog(project, "Unable to get the root path of the project", "Can't Get Path", AllIcons.Actions.Menu_paste);
+            Messages.showMessageDialog(project, "Unable to get the root path of the project", "Can't Get Path", AllIcons.Actions.MenuPaste);
         }
     }
 
     /**
-     * è·å–åˆ°æŒ‡å®šçš„æ–‡ä»¶
+     * »ñÈ¡µ½Ö¸¶¨µÄÎÄ¼ş
      *
-     * @param project é¡¹ç›®
-     * @param create  æ˜¯å¦åˆ›å»ºæ–‡ä»¶
+     * @param project ÏîÄ¿
+     * @param create  ÊÇ·ñ´´½¨ÎÄ¼ş
      */
     public static synchronized XmlFile getFileDirectoryXml(final Project project, boolean create) {
         if (project == null) {
             return null;
         }
-        //æŸ¥è¯¢ç›¸å…³æ–‡ä»¶ï¼Œä¸ç›®å½•æ— å…³
+        //²éÑ¯Ïà¹ØÎÄ¼ş£¬ÓëÄ¿Â¼ÎŞ¹Ø
         try {
-            //gitæ”¯æŒä¸å‹å¥½çš„è§£å†³
-            PsiFile[] pfs = FilenameIndex.getFilesByName(project, getFileName(), GlobalSearchScope.allScope(project));
+            //gitÖ§³Ö²»ÓÑºÃµÄ½â¾ö
+            PsiFile[] pfs = PsiShortNamesCache.getInstance(project).getFilesByName(getFileName());
+//            PsiFile[] pfs = FilenameIndex.getFilesByName(project, getFileName(), GlobalSearchScope.allScope(project));
+//            PsiFile[] pfs = FilenameIndex.getFilesByName(project, getFileName(), GlobalSearchScope.allScope(project));
             if (pfs.length == 1) {
-                //è·å–ä¸€ä¸ªæ–‡ä»¶ï¼Œå¦‚æœå­˜åœ¨å¤šä¸ªç›¸åŒçš„æ–‡ä»¶ï¼Œå–æŸ¥è¯¢åˆ°ç¬¬ä¸€ä¸ª.
+                //»ñÈ¡Ò»¸öÎÄ¼ş£¬Èç¹û´æÔÚ¶à¸öÏàÍ¬µÄÎÄ¼ş£¬È¡²éÑ¯µ½µÚÒ»¸ö.
                 PsiFile pf = pfs[0];
                 if (pf instanceof XmlFile) {
                     xmlFile = (XmlFile) pf;
                 } else {
-                    Messages.showMessageDialog(project, "There are multiple identical files in the root directory", "Can't Get Path", AllIcons.Actions.Menu_paste);
+                    Messages.showMessageDialog(project, "There are multiple identical files in the root directory", "Can't Get Path", AllIcons.Actions.MenuPaste);
                 }
             } else if (pfs.length == 0) {
                 if (create) {
@@ -148,15 +149,15 @@ public class FileDirectory {
     }
 
     /**
-     * è·å–æ–‡ä»¶åç§°
+     * »ñÈ¡ÎÄ¼şÃû³Æ
      *
      * @return String
      */
     private static String getFileName() {
 //        Map<String, String> map = System.getenv();
-//        String userName = map.get("USERNAME");// è·å–ç”¨æˆ·å
-//        String computerName = map.get("COMPUTERNAME");// è·å–è®¡ç®—æœºå
-//        String userDomain = map.get("USERDOMAIN");// è·å–è®¡ç®—æœºåŸŸå
+//        String userName = map.get("USERNAME");// »ñÈ¡ÓÃ»§Ãû
+//        String computerName = map.get("COMPUTERNAME");// »ñÈ¡¼ÆËã»úÃû
+//        String userDomain = map.get("USERDOMAIN");// »ñÈ¡¼ÆËã»úÓòÃû
 //        System.out.println("userName:" + userName);
 //        System.out.println("computerName:" + computerName);
 //        System.out.println("userDomain:" + userDomain);
@@ -169,9 +170,8 @@ public class FileDirectory {
         try {
             MessageDigest md5 = MessageDigest.getInstance("md5");
             digest = md5.digest(str.getBytes(StandardCharsets.UTF_8));
-            //16æ˜¯è¡¨ç¤ºè½¬æ¢ä¸º16è¿›åˆ¶æ•°
-            String md5Str = new BigInteger(1, digest).toString(16);
-            return md5Str;
+            //16ÊÇ±íÊ¾×ª»»Îª16½øÖÆÊı
+            return new BigInteger(1, digest).toString(16);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -179,9 +179,9 @@ public class FileDirectory {
     }
 
     /**
-     * åˆ›å»ºæ–‡ä»¶
+     * ´´½¨ÎÄ¼ş
      *
-     * @param project é¡¹ç›®
+     * @param project ÏîÄ¿
      */
     private static XmlFile createFileDirectoryXml(Project project) {
         if (project == null) {
@@ -194,15 +194,15 @@ public class FileDirectory {
     }
 
     /**
-     * ä¿å­˜æ–‡ä»¶
+     * ±£´æÎÄ¼ş
      *
-     * @param project é¡¹ç›®
+     * @param project ÏîÄ¿
      */
     public static synchronized void saveFileDirectoryXml(Project project, String text) {
         File f = new File(project.getBasePath() + File.separator + getFileName());
         if (!f.exists()) {
             try {
-                f.getParentFile().mkdirs();
+                boolean b = f.getParentFile().mkdirs();
                 boolean newFile = f.createNewFile();
                 if (newFile) {
                     BufferedWriter writer = null;
@@ -240,9 +240,9 @@ public class FileDirectory {
     }
 
     /**
-     * æ–‡ä»¶ç›‘å¬
+     * ÎÄ¼ş¼àÌı
      *
-     * @param project é¡¹ç›®
+     * @param project ÏîÄ¿
      */
     public static void treeChangeListener(Project project) {
         PsiManager.getInstance(project).addPsiTreeChangeListener(
@@ -263,7 +263,7 @@ public class FileDirectory {
                     public void beforeChildMovement(@NotNull PsiTreeChangeEvent psiTreeChangeEvent) {
                     }
 
-                    //æ›´æ–°å‰
+                    //¸üĞÂÇ°
                     @Override
                     public void beforeChildrenChange(@NotNull PsiTreeChangeEvent psiTreeChangeEvent) {
                         if (isFileName(psiTreeChangeEvent)) {
@@ -322,9 +322,9 @@ public class FileDirectory {
     }
 
     /**
-     * æ˜¯å¦ä¸ºæŒ‡å®šçš„æ–‡ä»¶
+     * ÊÇ·ñÎªÖ¸¶¨µÄÎÄ¼ş
      *
-     * @param psiTreeChangeEvent å¯¹è±¡
+     * @param psiTreeChangeEvent ¶ÔÏó
      * @return boolean
      */
     private static boolean isFileName(PsiTreeChangeEvent psiTreeChangeEvent) {
@@ -339,9 +339,9 @@ public class FileDirectory {
     }
 
     /**
-     * è®¾ç½®èŠ‚ç‚¹å¤‡æ³¨
+     * ÉèÖÃ½Úµã±¸×¢
      *
-     * @param abstractTreeNode å¯¹è±¡
+     * @param abstractTreeNode ¶ÔÏó
      */
     public static void setLocationString(AbstractTreeNode<?> abstractTreeNode) {
         if (null != abstractTreeNode) {
@@ -364,10 +364,10 @@ public class FileDirectory {
     }
 
     /**
-     * è®¾ç½®èŠ‚ç‚¹å¤‡æ³¨
+     * ÉèÖÃ½Úµã±¸×¢
      *
-     * @param node å¯¹è±¡
-     * @param data å¯¹è±¡
+     * @param node ¶ÔÏó
+     * @param data ¶ÔÏó
      */
     public static void setLocationString(ProjectViewNode node, PresentationData data) {
         if (null != node) {
@@ -390,10 +390,10 @@ public class FileDirectory {
     }
 
     /**
-     * è·å–åˆ° VirtualFile
+     * »ñÈ¡µ½ VirtualFile
      *
-     * @param methods æ–¹æ³•
-     * @param o       å¯¹è±¡
+     * @param methods ·½·¨
+     * @param o       ¶ÔÏó
      * @return VirtualFile
      */
     private static VirtualFile getVirtualFile(Method[] methods, Object o) {
@@ -419,29 +419,29 @@ public class FileDirectory {
     }
 
     /**
-     * è®¾ç½®å¤‡æ³¨
+     * ÉèÖÃ±¸×¢
      *
-     * @param virtualFile      å¯¹è±¡
-     * @param abstractTreeNode å¯¹è±¡
+     * @param virtualFile      ¶ÔÏó
+     * @param abstractTreeNode ¶ÔÏó
      */
     private static void setXmlToLocationString(VirtualFile virtualFile, AbstractTreeNode<?> abstractTreeNode) {
         XmlEntity matchPath = getMatchPath(virtualFile, abstractTreeNode.getProject());
         if (null != matchPath) {
-            //è®¾ç½®å¤‡æ³¨
+            //ÉèÖÃ±¸×¢
             abstractTreeNode.getPresentation().setLocationString(matchPath.getTitle());
         }
     }
 
     /**
-     * è®¾ç½®å¤‡æ³¨
+     * ÉèÖÃ±¸×¢
      *
-     * @param virtualFile å¯¹è±¡
-     * @param data        å¯¹è±¡
+     * @param virtualFile ¶ÔÏó
+     * @param data        ¶ÔÏó
      */
     private static void setXmlToLocationString(Project project, VirtualFile virtualFile, PresentationData data) {
         XmlEntity matchPath = getMatchPath(virtualFile, project);
         if (null != matchPath) {
-            //è®¾ç½®å¤‡æ³¨
+            //ÉèÖÃ±¸×¢
             data.setLocationString(matchPath.getTitle());
             for (Icons allIcon : FileIcons.getAllIcons()) {
                 if (allIcon.getName().equals(matchPath.getIcon())) {
@@ -453,9 +453,9 @@ public class FileDirectory {
     }
 
     /**
-     * åŒ¹é…è·¯å¾„
+     * Æ¥ÅäÂ·¾¶
      *
-     * @param virtualFile æ–‡ä»¶å¯¹è±¡
+     * @param virtualFile ÎÄ¼ş¶ÔÏó
      * @return boolean
      */
     private static XmlEntity getMatchPath(VirtualFile virtualFile, Project project) {
@@ -464,7 +464,7 @@ public class FileDirectory {
             if (listTreeInfo != null) {
                 String basePath = project.getPresentableUrl();
                 String canonicalPath = virtualFile.getCanonicalPath();
-                String asbbasePath = canonicalPath.substring(basePath.length(), canonicalPath.length());
+                String asbbasePath = canonicalPath == null ? "" : canonicalPath.substring(basePath != null ? basePath.length() : 0);
                 //Messages.showMessageDialog(project, presentableUrl + ":" + x.getPath(), "Can't Get Path", AllIcons.Actions.Menu_paste);
                 if (asbbasePath.equals(listTreeInfo.getPath())) {
                     return listTreeInfo;

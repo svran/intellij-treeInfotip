@@ -33,7 +33,7 @@
 
     <actions>
         <!-- Add your actions here -->
-        <group id="StudyAction.MyGroup" text="Add Description" popup="true" icon="AllIcons.Actions.Menu_paste">
+        <group id="StudyAction.MyGroup" text="Add Description" popup="true" icon="AllIcons.Actions.MenuPaste">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="ReplaceInPath"/>
             <action id="FirstAction" class="com.svran.idea.plugin.treeinfo.action.ActionDescriptionText" text="Add Text"
                     description="添加备注信息">
